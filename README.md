@@ -73,3 +73,6 @@ MIT License
 
 > “Sathi” means companion in Hindi—Research Sathi is designed to be your friend in online learning and research!
 
+## 💻 Preview
+![alt text](image.png)
+
