@@ -36,15 +36,6 @@
 
 ---
 
-## 🌱 Planned Improvements
-
-- Multiple notes with tagging and folders
-- Export/import notes (TXT, PDF, etc.)
-- Note history and undo
-- Themes, accessibility options, and cloud sync
-
----
-
 ## 🛡️ Privacy
 
 All your notes are stored **locally**—no data is sent outside your browser.
@@ -53,7 +44,7 @@ All your notes are stored **locally**—no data is sent outside your browser.
 
 ## 👨‍💻 Tech Stack
 
-- JavaScript (Chrome Extension APIs)
+- Java Spring Boot  (Chrome Extension APIs)
 - HTML & CSS (with responsive modern design)
 - LocalStorage for data persistence
 
