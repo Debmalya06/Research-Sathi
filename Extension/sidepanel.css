@@ -1,4 +1,4 @@
-  * {
+* {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -322,3 +322,7 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--border-hover);
         }
+
+        .youtube-section {
+    margin-bottom: 24px;
+}

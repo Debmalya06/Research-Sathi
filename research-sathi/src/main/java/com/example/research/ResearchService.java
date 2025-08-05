@@ -88,6 +88,9 @@ public class ResearchService {
             case "suggest":
                 prompt.append("Based on the following content, suggest related topics and further reading. Format the response with clear headings and bullet points:\n");
                 break;
+            case "youtube_summary":
+                prompt.append("Summarize the following YouTube video transcript in a concise and informative way, highlighting the main points and key takeaways:\n");
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported operation: " + request.getOperation());
         }

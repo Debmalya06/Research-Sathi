@@ -31,11 +31,12 @@ function updateThemeIcon(theme) {
                 }
             });
 
-            document.getElementById('summarizeBtn').addEventListener('click', summarizeText);
-            document.getElementById('saveNotesBtn').addEventListener('click', saveNotes);
+            document.getElementById('summarizeBtn').addEventListener('click', () => processText('summarize'));
+            document.getElementById('suggestBtn').addEventListener('click', () => processText('suggest'));
+            document.getElementById('saveNotesBtn').addEventListener('click', saveNotes); // <-- Add this line
         });
 
-        async function summarizeText() {
+        async function processText(operation) {
             const summarizeBtn = document.getElementById('summarizeBtn');
             const resultsDiv = document.getElementById('results');
             
@@ -61,15 +62,16 @@ function updateThemeIcon(theme) {
                 const response = await fetch('http://localhost:8080/api/research/process', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content: result, operation: 'summarize' })
+                    body: JSON.stringify({ content: result, operation })
                 });
 
                 if (!response.ok) {
                     throw new Error(`API Error: ${response.status} - ${response.statusText}`);
                 }
 
-                const text = await response.text();
-                showResult(text.replace(/\n/g, '<br>'), 'success');
+                const responseText = await response.text();
+                const htmlContent = markdownToHtml(responseText);
+                showResult(htmlContent, 'success');
 
             } catch (error) {
                 console.error('Summarization error:', error);
@@ -159,3 +161,66 @@ function updateThemeIcon(theme) {
                 statusDiv.remove();
             }, 3000);
         }
+
+        // Add this function at the top or before you use it
+        function markdownToHtml(markdown) {
+            let html = markdown
+                .replace(/^## (.*)$/gm, '<h3>$1</h3>')
+                .replace(/^# (.*)$/gm, '<h2>$1</h2>')
+                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                .replace(/^\* (.*)$/gm, '<li>$1</li>');
+
+            // Wrap <li> items in <ul>
+            html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>');
+            // Remove nested <ul> if any
+            html = html.replace(/(<ul>(?:\s*<ul>)+)/g, '<ul>');
+            html = html.replace(/(<\/ul>(?:\s*<\/ul>)+)/g, '</ul>');
+
+            return html;
+        }
+
+        // Add after DOMContentLoaded event
+        document.getElementById('youtubeSummaryBtn').addEventListener('click', async () => {
+            const urlInput = document.getElementById('youtubeUrlInput');
+            const url = urlInput.value.trim();
+            const resultsDiv = document.getElementById('results');
+
+            if (!url) {
+                showResult('Please enter a YouTube video URL.', 'error');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                // Step 1: Get transcript from backend
+                const transcriptRes = await fetch('http://localhost:8080/api/youtube/transcript', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+
+                if (!transcriptRes.ok) {
+                    throw new Error('Could not fetch transcript. The video may not have captions or the URL is invalid.');
+                }
+
+                const transcriptText = await transcriptRes.text();
+
+                // Step 2: Get summary from backend
+                const summaryRes = await fetch('http://localhost:8080/api/research/process', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: transcriptText, operation: 'youtube_summary' })
+                });
+
+                if (!summaryRes.ok) {
+                    throw new Error('Could not summarize the transcript.');
+                }
+
+                const summaryText = await summaryRes.text();
+                const htmlContent = markdownToHtml(summaryText);
+                showResult(htmlContent, 'success');
+            } catch (error) {
+                showResult(error.message, 'error');
+            }
+        });
