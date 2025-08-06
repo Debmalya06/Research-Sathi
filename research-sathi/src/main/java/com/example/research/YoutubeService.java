@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 @Service
 public class YoutubeService {
 
-    private final WebClient webClient = WebClient.create("http://localhost:5001");
+    private final WebClient webClient = WebClient.create("http://transcript:5001");
 
     public String getTranscriptFromUrl(String url) {
         String response = webClient.post()

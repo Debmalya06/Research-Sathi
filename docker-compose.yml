@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  backend:
+    build: ./research-sathi
+    ports:
+      - "8080:8080"
+    depends_on:
+      - transcript
+  transcript:
+    build: ./Youtube transcript
+    ports:
+      - "5001:5001"
